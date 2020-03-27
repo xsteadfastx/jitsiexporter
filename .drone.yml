@@ -1,0 +1,19 @@
+---
+kind: pipeline
+name: default
+type: docker
+steps:
+  - name: lint
+    image: golangci/golangci-lint:v1.23-alpine
+    commands:
+      - apk add --no-cache make
+      - make lint
+  - name: test
+    image: golang:1.14
+    commands:
+      - make test
+  - name: build
+    image: golang:1.14
+    commands:
+      - go get github.com/mitchellh/gox
+      - make build
