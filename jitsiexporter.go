@@ -99,7 +99,7 @@ func collect(m *Metrics) {
 	}
 }
 
-func Serve(url string) {
+func Serve(url string, debug bool, interval time.Duration, port int, host string) {
 	s := colibri{}
 	metrics := &Metrics{
 		URL:     url,
@@ -107,7 +107,10 @@ func Serve(url string) {
 		Metrics: make(map[string]Metric),
 	}
 
-	log.SetLevel(log.DebugLevel)
+	if debug {
+		log.SetLevel(log.DebugLevel)
+	}
+
 	log.Debugf("%+v", metrics)
 
 	go collect(metrics)

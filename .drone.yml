@@ -17,3 +17,13 @@ steps:
     commands:
       - go get github.com/mitchellh/gox
       - make build
+  - name: docker
+    image: plugins/docker
+    settings:
+      repo: quay.io/xsteadfastx/jitsiexporter
+      registry: quay.io
+      auto_tag: true
+      username:
+        from_secret: username
+      password:
+        from_secret: password

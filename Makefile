@@ -16,7 +16,7 @@ test:
 	go test ./...
 
 lint:
-	golangci-lint run --enable-all--timeout 5m
+	golangci-lint run --enable-all --timeout 5m
 
 dep-update:
 	go get -u ./...
