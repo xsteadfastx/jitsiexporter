@@ -15,8 +15,8 @@ steps:
   - name: build
     image: golang:1.14
     commands:
-      - go get github.com/mitchellh/gox
-      - go mod vendor
+      - (cd /go; go get -v github.com/mitchellh/gox)
+      - (cd /go; go get -v github.com/vektra/mockery/.../)
       - make build
   - name: docker
     image: plugins/docker
