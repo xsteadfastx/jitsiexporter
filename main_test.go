@@ -13,8 +13,8 @@ func TestUpdate(t *testing.T) {
 
 	s := make(map[string]interface{})
 	s["foo"] = "foo"
-	s["bar"] = 1
-	s["zonk"] = float64(1)
+    s["bar"] = 1 // nolint:gomnd
+    s["zonk"] = float64(1) // nolint:gomnd
 	mockStater := &MockStater{}
 	mockStater.On("Now", "http://foo.tld").Return(s)
 
