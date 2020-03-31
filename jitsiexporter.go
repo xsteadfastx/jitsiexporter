@@ -117,5 +117,5 @@ func Serve(url string, debug bool, interval time.Duration, port int, host string
 
 	http.Handle("/metrics", promhttp.Handler())
 	log.Info("beginning to serve")
-	log.Fatal(http.ListenAndServe("0.0.0.0:8080", nil))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), nil))
 }
