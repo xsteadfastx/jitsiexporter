@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"sort"
 	"sync"
 	"time"
 
@@ -22,7 +21,6 @@ type Metric struct {
 
 type Metrics struct {
 	Metrics map[string]Metric
-	Exclude []string
 	URL     string
 	Stater  Stater
 	mux     sync.Mutex
@@ -36,31 +34,36 @@ func (m *Metrics) Update() {
 	for k, v := range now {
 		fieldLogger := log.WithFields(log.Fields{"key": k})
 
-		if sort.SearchStrings(m.Exclude, k) != len(m.Exclude) {
-			fieldLogger.Info("exclude")
+		// skipping anything else than float64.
+		switch t := v.(type) {
+		case float64:
+			fieldLogger.Debugf("found '%v'", t)
+
+			name := fmt.Sprintf("jitsi_%s", k)
+			if _, ok := m.Metrics[name]; !ok {
+				fieldLogger.Info("creating and registering metric")
+
+				m.Metrics[name] = Metric{
+					Name: name,
+					Gauge: prometheus.NewGauge(
+						prometheus.GaugeOpts{
+							Name: name,
+						},
+					),
+				}
+				fieldLogger.Debugf("%+v", m.Metrics[name])
+				prometheus.MustRegister(m.Metrics[name].Gauge)
+			}
+
+			value := v.(float64)
+			fieldLogger.Infof("set to %f", value)
+			m.Metrics[name].Gauge.Set(value)
+		default:
+			fieldLogger.Debugf("found %v", t)
+			fieldLogger.Info("skipping")
 
 			continue
 		}
-
-		name := fmt.Sprintf("jitsi_%s", k)
-		if _, ok := m.Metrics[name]; !ok {
-			fieldLogger.Info("creating and registerting metric")
-
-			m.Metrics[name] = Metric{
-				Name: name,
-				Gauge: prometheus.NewGauge(
-					prometheus.GaugeOpts{
-						Name: name,
-					},
-				),
-			}
-			fieldLogger.Debugf("%+v", m.Metrics[name])
-			prometheus.MustRegister(m.Metrics[name].Gauge)
-		}
-
-		value := v.(float64)
-		fieldLogger.Infof("set to %f", value)
-		m.Metrics[name].Gauge.Set(value)
 	}
 	m.mux.Unlock()
 }
@@ -99,11 +102,6 @@ func collect(m *Metrics) {
 func Serve(url string) {
 	s := colibri{}
 	metrics := &Metrics{
-		Exclude: []string{
-			"conference_sizes",
-			"current_timestamp",
-			"graceful_shutdown",
-		},
 		URL:     url,
 		Stater:  s,
 		Metrics: make(map[string]Metric),
