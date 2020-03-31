@@ -16,6 +16,7 @@ steps:
     image: golang:1.14
     commands:
       - go get github.com/mitchellh/gox
+      - go mod vendor
       - make build
   - name: docker
     image: plugins/docker
