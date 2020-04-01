@@ -15,7 +15,7 @@ func main() {
 	ver := flag.Bool("version", false, "Prints version.")
 	url := flag.String("url", "", "URL of Jitsi Videobridge Colibri Stats.")
 	debug := flag.Bool("debug", false, "Enable debug.")
-	interval := flag.Duration("interval", 10*time.Second, "Seconds to wait before scraping.") // nolint: gomnd
+	interval := flag.Duration("interval", 30*time.Second, "Seconds to wait before scraping.") // nolint: gomnd
 	port := flag.Int("port", 9700, "Port to listen on.")
 	host := flag.String("host", "localhost", "Host to listen on.")
 	flag.Parse()

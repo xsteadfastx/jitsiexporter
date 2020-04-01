@@ -16,7 +16,7 @@ func TestUpdate(t *testing.T) {
 	s["bar"] = 1           // nolint:gomnd
 	s["zonk"] = float64(1) // nolint:gomnd
 	mockStater := &MockStater{}
-	mockStater.On("Now", "http://foo.tld").Return(s)
+	mockStater.On("Now", "http://foo.tld").Return(s, nil)
 
 	m := &Metrics{
 		URL:     "http://foo.tld",

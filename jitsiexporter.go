@@ -1,6 +1,7 @@
 package jitsiexporter
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -20,17 +21,32 @@ type Metric struct {
 }
 
 type Metrics struct {
-	Metrics map[string]Metric
-	URL     string
-	Stater  Stater
-	mux     sync.Mutex
+	Metrics  map[string]Metric
+	URL      string
+	Stater   Stater
+	mux      sync.Mutex
+	Errors   prometheus.Counter
+	Interval time.Duration
 }
 
-func (m *Metrics) Update() {
-	now := m.Stater.Now(m.URL)
+func (m *Metrics) Update() error {
+	m.mux.Lock()
+	defer m.mux.Unlock()
+
+	now, err := m.Stater.Now(m.URL)
+
+	if err != nil {
+		m.Errors.Inc()
+
+		for _, i := range m.Metrics {
+			prometheus.Unregister(i.Gauge)
+		}
+
+		return err
+	}
+
 	log.Debug(now)
 
-	m.mux.Lock()
 	for k, v := range now {
 		fieldLogger := log.WithFields(log.Fields{"key": k})
 
@@ -65,47 +81,98 @@ func (m *Metrics) Update() {
 			continue
 		}
 	}
-	m.mux.Unlock()
+
+	return nil
+}
+
+type Response struct {
+	Resp  *http.Response
+	Error error
+}
+
+func get(ctx context.Context, url string, resp chan Response) {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		resp <- Response{Resp: nil, Error: err}
+		return
+	}
+
+	client := http.DefaultClient
+
+	res, err := client.Do(req.WithContext(ctx)) // nolint:bodyclose
+	if err != nil {
+		resp <- Response{Resp: nil, Error: err}
+	}
+
+	resp <- Response{Resp: res, Error: nil}
 }
 
 type Stater interface {
-	Now(url string) map[string]interface{}
+	Now(url string) (map[string]interface{}, error)
 }
 
 type colibri struct{}
 
-func (c colibri) Now(url string) map[string]interface{} {
+func (c colibri) Now(url string) (map[string]interface{}, error) {
 	s := make(map[string]interface{})
-	resp, err := http.Get(url) // nolint:gosec
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second) // nolint:gomnd
 
-	if err != nil {
-		log.Fatal(err)
+	defer cancel()
+
+	res := make(chan Response)
+
+	var resp *http.Response
+
+	var err error
+
+	go get(ctx, url, res)
+
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	case r := <-res:
+		err = r.Error
+		resp = r.Resp
+
+		defer resp.Body.Close()
 	}
 
-	defer resp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
 	err = json.NewDecoder(resp.Body).Decode(&s)
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	return s
+	return s, nil
 }
 
 func collect(m *Metrics) {
 	for {
-		m.Update()
-		time.Sleep(30 * time.Second) // nolint:gomnd
+		err := m.Update()
+		if err != nil {
+			log.Error(err)
+		}
+
+		time.Sleep(m.Interval) // nolint:gomnd
 	}
 }
 
 func Serve(url string, debug bool, interval time.Duration, port int, host string) {
 	s := colibri{}
+	e := prometheus.NewCounter(prometheus.CounterOpts{Name: "jitsi_fetch_errors"})
 	metrics := &Metrics{
-		URL:     url,
-		Stater:  s,
-		Metrics: make(map[string]Metric),
+		URL:      url,
+		Stater:   s,
+		Metrics:  make(map[string]Metric),
+		Errors:   e,
+		Interval: interval,
 	}
+
+	prometheus.MustRegister(e)
 
 	if debug {
 		log.SetLevel(log.DebugLevel)

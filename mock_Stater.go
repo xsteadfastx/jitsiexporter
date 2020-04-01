@@ -10,7 +10,7 @@ type MockStater struct {
 }
 
 // Now provides a mock function with given fields: url
-func (_m *MockStater) Now(url string) map[string]interface{} {
+func (_m *MockStater) Now(url string) (map[string]interface{}, error) {
 	ret := _m.Called(url)
 
 	var r0 map[string]interface{}
@@ -22,5 +22,12 @@ func (_m *MockStater) Now(url string) map[string]interface{} {
 		}
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(url)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
