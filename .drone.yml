@@ -28,3 +28,11 @@ steps:
         from_secret: username
       password:
         from_secret: password
+  - name: publish to github
+    image: plugins/github-release
+    settings:
+      api_key:
+        from_secret: github_token
+      files: jitsiexporter_linux_amd64
+    when:
+      event: tag
