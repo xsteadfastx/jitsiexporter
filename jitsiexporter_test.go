@@ -24,7 +24,8 @@ func TestUpdate(t *testing.T) {
 		Stater:  mockStater,
 	}
 
-	m.Update()
+	err := m.Update()
+	assert.Empty(err)
 
 	assert.Equal(testutil.ToFloat64(m.Metrics["jitsi_zonk"].Gauge), float64(1))
 	assert.Equal(m.Metrics["jitsi_foo"], Metric{Name: "", Gauge: prometheus.Gauge(nil)})
