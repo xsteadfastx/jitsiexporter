@@ -1,6 +1,8 @@
 package jitsiexporter
 
 import (
+	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -31,4 +33,32 @@ func TestUpdate(t *testing.T) {
 	assert.Equal(m.Metrics["jitsi_foo"], Metric{Name: "", Gauge: prometheus.Gauge(nil)})
 	assert.Equal(m.Metrics["jitsi_bar"], Metric{Name: "", Gauge: prometheus.Gauge(nil)})
 	assert.Equal(len(m.Metrics), 1)
+}
+
+func TestUpdateOnError(t *testing.T) {
+	assert := assert.New(t)
+
+	mockStater := &MockStater{}
+	mockStater.On("Now", "http://foo.tld").Return(nil, errors.New("something went foo"))
+
+	e := prometheus.NewCounter(prometheus.CounterOpts{Name: "jitsi_fetch_errors"})
+	metricsMap := make(map[string]Metric)
+	metricsMap["testmetric"] = Metric{
+		Name:  "testmetric",
+		Gauge: prometheus.NewGauge(prometheus.GaugeOpts{Name: "jitsi_testmetric"}),
+	}
+	m := &Metrics{
+		URL:     "http://foo.tld",
+		Metrics: metricsMap,
+		Stater:  mockStater,
+		Errors:  e,
+	}
+
+	assert.Equal(1, len(m.Metrics))
+
+	err := m.Update()
+	fmt.Println(err)
+	assert.NotEmpty(err)
+
+	assert.Equal(0, len(m.Metrics))
 }

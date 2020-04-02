@@ -38,8 +38,9 @@ func (m *Metrics) Update() error {
 	if err != nil {
 		m.Errors.Inc()
 
-		for _, i := range m.Metrics {
-			prometheus.Unregister(i.Gauge)
+		for k, v := range m.Metrics {
+			prometheus.Unregister(v.Gauge)
+			delete(m.Metrics, k)
 		}
 
 		return err
