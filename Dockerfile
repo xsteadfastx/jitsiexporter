@@ -11,5 +11,5 @@ RUN set -ex \
 
 FROM scratch
 COPY --from=builder /go/src/github.com/xsteadfastx/jitsiexporter/jitsiexporter_linux_amd64 /bin/jitsiexporter
-EXPOSE 6700
+EXPOSE 9700
 ENTRYPOINT ["/bin/jitsiexporter", "-debug=true", "-host=0.0.0.0"]
