@@ -15,7 +15,7 @@ A Jitsi meet prometheus exporter.
           -port int
                 Port to listen on. (default 9700)
           -url string
-                URL of Jitsi Videobridge Colibri Stats.
+                URL of Jitsi Videobridge Colibri Stats. NEEDS TO BE THE FULL URL WITH '/colibri/stats'.
           -version
                 Prints version.
 

@@ -13,7 +13,7 @@ import (
 func main() {
 	version := "development"
 	ver := flag.Bool("version", false, "Prints version.")
-	url := flag.String("url", "", "URL of Jitsi Videobridge Colibri Stats.")
+	url := flag.String("url", "", "URL of Jitsi Videobridge Colibri Stats. NEEDS TO BE THE FULL URL WITH '/colibri/stats'.")
 	debug := flag.Bool("debug", false, "Enable debug.")
 	interval := flag.Duration("interval", 30*time.Second, "Seconds to wait before scraping.") // nolint: gomnd
 	port := flag.Int("port", 9700, "Port to listen on.")
