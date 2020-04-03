@@ -29,9 +29,9 @@ func TestUpdate(t *testing.T) {
 	err := m.Update()
 	assert.Empty(err)
 
-	assert.Equal(testutil.ToFloat64(m.Metrics["jitsi_zonk"].Gauge), float64(1))
-	assert.Equal(m.Metrics["jitsi_foo"], Metric{Name: "", Gauge: prometheus.Gauge(nil)})
-	assert.Equal(m.Metrics["jitsi_bar"], Metric{Name: "", Gauge: prometheus.Gauge(nil)})
+	assert.Equal(float64(1), testutil.ToFloat64(m.Metrics["jitsi_zonk"].Gauge))
+	assert.Equal(Metric{Name: "", Gauge: prometheus.Gauge(nil)}, m.Metrics["jitsi_foo"])
+	assert.Equal(Metric{Name: "", Gauge: prometheus.Gauge(nil)}, m.Metrics["jitsi_bar"])
 	assert.Equal(len(m.Metrics), 1)
 }
 
@@ -61,4 +61,6 @@ func TestUpdateOnError(t *testing.T) {
 	assert.NotEmpty(err)
 
 	assert.Equal(0, len(m.Metrics))
+
+	assert.Equal(float64(1), testutil.ToFloat64(e))
 }
