@@ -1,1 +1,1 @@
-{"version":1,"ops":[{"type":1,"author":{"id":"2c4f6e5649635a4d35a6d135765ec00d437bc664"},"timestamp":1586864842,"title":"hostname label","message":"needed for using server instance as grafana variable.","files":null}]}
+{"version":1,"ops":[{"type":8,"author":{"id":"2c4f6e5649635a4d35a6d135765ec00d437bc664"},"timestamp":1586865155,"target":"06fd8d1516d03f2238403fccc901f0cb479d43a7f8b9dd84810c7b3a71790adf","new_metadata":{"github-id":"MDU6SXNzdWU1OTk1MTQwNTM=","github-url":"https://github.com/xsteadfastx/jitsiexporter/issues/1"}}]}
