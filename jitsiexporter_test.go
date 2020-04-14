@@ -30,8 +30,6 @@ func TestUpdate(t *testing.T) {
 	assert.Empty(err)
 
 	assert.Equal(float64(1), testutil.ToFloat64(m.Metrics["jitsi_zonk"].Gauge))
-	assert.Equal(Metric{Name: "", Gauge: prometheus.Gauge(nil)}, m.Metrics["jitsi_foo"])
-	assert.Equal(Metric{Name: "", Gauge: prometheus.Gauge(nil)}, m.Metrics["jitsi_bar"])
 	assert.Equal(len(m.Metrics), 1)
 }
 
@@ -45,7 +43,7 @@ func TestUpdateOnError(t *testing.T) {
 	metricsMap := make(map[string]Metric)
 	metricsMap["testmetric"] = Metric{
 		Name:  "testmetric",
-		Gauge: prometheus.NewGauge(prometheus.GaugeOpts{Name: "jitsi_testmetric"}),
+		Gauge: prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: "jitsi_testmetric"}, []string{"hostname"}),
 	}
 	m := &Metrics{
 		URL:     "http://foo.tld",

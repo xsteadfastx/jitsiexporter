@@ -17,7 +17,7 @@ import (
 
 type Metric struct {
 	Name  string
-	Gauge prometheus.Gauge
+	Gauge *prometheus.GaugeVec
 }
 
 type Metrics struct {
@@ -27,6 +27,7 @@ type Metrics struct {
 	mux      sync.Mutex
 	Errors   prometheus.Counter
 	Interval time.Duration
+	Hostname string
 }
 
 func (m *Metrics) Update() error {
@@ -62,10 +63,11 @@ func (m *Metrics) Update() error {
 
 				m.Metrics[name] = Metric{
 					Name: name,
-					Gauge: prometheus.NewGauge(
+					Gauge: prometheus.NewGaugeVec(
 						prometheus.GaugeOpts{
 							Name: name,
 						},
+						[]string{"hostname"},
 					),
 				}
 				fieldLogger.Debugf("%+v", m.Metrics[name])
@@ -74,7 +76,7 @@ func (m *Metrics) Update() error {
 
 			value := v.(float64)
 			fieldLogger.Infof("set to %f", value)
-			m.Metrics[name].Gauge.Set(value)
+			m.Metrics[name].Gauge.WithLabelValues(m.Hostname).Set(value)
 		default:
 			fieldLogger.Debugf("found %v", t)
 			fieldLogger.Info("skipping")
@@ -162,7 +164,7 @@ func collect(m *Metrics) {
 	}
 }
 
-func Serve(url string, debug bool, interval time.Duration, port int, host string) {
+func Serve(url string, debug bool, interval time.Duration, port int, host string, servername string) {
 	s := colibri{}
 	e := prometheus.NewCounter(prometheus.CounterOpts{Name: "jitsi_fetch_errors"})
 	metrics := &Metrics{
@@ -171,6 +173,7 @@ func Serve(url string, debug bool, interval time.Duration, port int, host string
 		Metrics:  make(map[string]Metric),
 		Errors:   e,
 		Interval: interval,
+		Hostname: servername,
 	}
 
 	prometheus.MustRegister(e)

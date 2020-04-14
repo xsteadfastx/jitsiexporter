@@ -18,6 +18,7 @@ func main() {
 	interval := flag.Duration("interval", 30*time.Second, "Seconds to wait before scraping.") // nolint: gomnd
 	port := flag.Int("port", 9700, "Port to listen on.")
 	host := flag.String("host", "localhost", "Host to listen on.")
+	servername := flag.String("servername", "", "Jitsi server name. Used as prometheus label.")
 	flag.Parse()
 
 	if *ver {
@@ -29,5 +30,5 @@ func main() {
 		log.Fatal("needs a url!")
 	}
 
-	jitsiexporter.Serve(*url, *debug, *interval, *port, *host)
+	jitsiexporter.Serve(*url, *debug, *interval, *port, *host, *servername)
 }
