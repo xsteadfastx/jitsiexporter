@@ -134,8 +134,6 @@ func (c colibri) Now(url string) (map[string]interface{}, error) {
 	case r := <-res:
 		err = r.Error
 		resp = r.Resp
-
-		defer resp.Body.Close()
 	}
 
 	if err != nil {
@@ -147,6 +145,8 @@ func (c colibri) Now(url string) (map[string]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	defer resp.Body.Close()
 
 	return s, nil
 }
