@@ -2,22 +2,27 @@
 kind: pipeline
 name: default
 type: docker
+
 steps:
+
   - name: lint
     image: golangci/golangci-lint:v1.24-alpine
     commands:
       - apk add --no-cache make
       - make lint
+
   - name: test
     image: golang:1.14
     commands:
       - make test
+
   - name: build
     image: golang:1.14
     commands:
       - (cd /go; go get -v github.com/mitchellh/gox)
       - (cd /go; go get -v github.com/vektra/mockery/.../)
       - make build
+
   - name: docker
     image: plugins/docker
     settings:
@@ -28,11 +33,18 @@ steps:
         from_secret: username
       password:
         from_secret: password
+
   - name: publish to github
     image: plugins/github-release
     settings:
       api_key:
         from_secret: github_token
-      files: jitsiexporter_linux_amd64
+      files:
+        - jitsiexporter_darwin_*
+        - jitsiexporter_freebsd_*
+        - jitsiexporter_linux_*
+        - jitsiexporter_netbsd_*
+        - jitsiexporter_openbsd_*
+        - jitsiexporter_windows_*
     when:
       event: tag

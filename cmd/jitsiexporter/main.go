@@ -10,8 +10,9 @@ import (
 	"github.com/xsteadfastx/jitsiexporter"
 )
 
+var version string = "development"
+
 func main() {
-	version := "development"
 	ver := flag.Bool("version", false, "Prints version.")
 	url := flag.String("url", "", "URL of Jitsi Videobridge Colibri Stats.")
 	debug := flag.Bool("debug", false, "Enable debug.")

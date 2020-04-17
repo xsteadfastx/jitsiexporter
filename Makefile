@@ -6,7 +6,7 @@ VERSION ?= $(shell git describe --tags --always --dirty --match=v* 2> /dev/null 
 build:
 	export GOFLAGS=-mod=vendor ; \
 	go generate ./...; \
-	CGO_ENABLED=0 gox -osarch="linux/amd64" -mod vendor -ldflags '-extldflags "-static" -X "main.version=${VERSION}"' github.com/xsteadfastx/jitsiexporter/cmd/jitsiexporter
+	CGO_ENABLED=0 gox -mod vendor -ldflags '-extldflags "-static" -X "main.version=${VERSION}"' github.com/xsteadfastx/jitsiexporter/cmd/jitsiexporter
 
 clean:
 	rm -f jitsiexporter
