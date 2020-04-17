@@ -5,6 +5,11 @@ type: docker
 
 steps:
 
+  - name: fetch
+    image: alpine/git
+    commands:
+      - git fetch --tags
+
   - name: lint
     image: golangci/golangci-lint:v1.24-alpine
     commands:
