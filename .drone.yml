@@ -48,7 +48,7 @@ steps:
       DOCKER_REGISTRY: quay.io
     commands:
       - sleep 5
-      - apk add --no-cache bash curl docker
+      - apk add --no-cache bash curl docker git
       - curl -sL https://git.io/goreleaser | bash
     depends_on:
       - test
