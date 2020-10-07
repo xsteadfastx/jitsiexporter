@@ -35,30 +35,36 @@ steps:
 
   - name: release
     image: golang
+    volumes:
+      - name: dockersock
+        path: /var/run
     environment:
       GITEA_TOKEN:
         from_secret: gitea_token
+      GITHUB_TOKEN:
+        from_secret: github_token
       DOCKER_USERNAME:
         from_secret: username
       DOCKER_PASSWORD:
         from_secret: password
       DOCKER_REGISTRY: quay.io
     commands:
+      - sleep 5
       - curl -sL https://git.io/goreleaser | bash
     depends_on:
       - test
       - lint
     when:
       event: tag
-  # - name: docker
-  #   image: plugins/docker
-  #   settings:
-  #     repo: quay.io/xsteadfastx/jitsiexporter
-  #     registry: quay.io
-  #     auto_tag: true
-  #     username:
-  #       from_secret: username
-  #     password:
-  #       from_secret: password
-  #   when:
-  #     event: tag
+
+services:
+  - name: docker
+    image: docker:dind
+    privileged: true
+    volumes:
+      - name: dockersock
+        path: /var/run
+
+volumes:
+  - name: dockersock
+    temp: {}
