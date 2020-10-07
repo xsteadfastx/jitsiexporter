@@ -29,7 +29,7 @@ archives:
 dockers:
   - image_templates:
       - "quay.io/xsteadfastx/jitsiexporter:latest"
-      - "quay.io/xsteadfastx/jitsiexporter:{{ .Tag }}"
+      - "quay.io/xsteadfastx/jitsiexporter:{{ .Version }}"
       - "quay.io/xsteadfastx/jitsiexporter:{{ .Major }}"
     dockerfile: Dockerfile
 
