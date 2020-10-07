@@ -49,7 +49,9 @@ steps:
     commands:
       - sleep 5
       - apk add --no-cache bash curl docker git
-      - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin $DOCKER_REGISTRY
+      - >
+        echo "$DOCKER_PASSWORD" |
+        docker login -u $DOCKER_USERNAME --password-stdin $DOCKER_REGISTRY
       - curl -sL https://git.io/goreleaser | bash
     depends_on:
       - test

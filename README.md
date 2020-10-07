@@ -1,7 +1,6 @@
 # jitsiexporter
 
-[![Build Status](https://cloud.drone.io/api/badges/xsteadfastx/jitsiexporter/status.svg)](https://cloud.drone.io/xsteadfastx/jitsiexporter)
-[![Docker Repository on Quay](https://quay.io/repository/xsteadfastx/jitsiexporter/status "Docker Repository on Quay")](https://quay.io/repository/xsteadfastx/jitsiexporter)
+[![Build Status](https://ci.xsfx.dev/api/badges/prometheus/jitsiexporter/status.svg)](https://ci.xsfx.dev/prometheus/jitsiexporter)
 
 A Jitsi meet prometheus exporter.
 
