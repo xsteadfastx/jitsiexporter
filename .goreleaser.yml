@@ -1,0 +1,60 @@
+---
+gitea_urls:
+  api: https://git.xsfx.dev/api/v1/
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    ldflags:
+      - >
+        -s -w
+        -extldflags "-static"
+        -X git.xsfx.dev/prometheus/jitsiexporter/cmd/main.version={{.Version}}
+        -X git.xsfx.dev/prometheus/jitsiexporter/cmd/main.commit={{.ShortCommit}}
+        -X git.xsfx.dev/prometheus/jitsiexporter/cmd/main.date={{.Date}}
+    main: "./cmd/jitsiexporter/main.go"
+
+archives:
+  - replacements:
+      darwin: macos
+      386: i386
+    format_overrides:
+      - goos: windows
+        format: zip
+
+dockers:
+  - image_templates:
+      - "quay.io/xsteadfastx/jitsiexporter:latest"
+      - "quay.io/xsteadfastx/jitsiexporter:{{ .Tag }}"
+      - "quay.io/xsteadfastx/jitsiexporter:{{ .Major }}"
+    dockerfile: Dockerfile
+
+checksum:
+  name_template: "checksums.txt"
+
+snapshot:
+  name_template: "{{ .Tag }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^Bump version:"
+      - "typo"
+      - "^debug:"
+
+nfpms:
+  - formats:
+      - apk
+      - deb
+      - rpm
+    replacements:
+      386: i386
+    homepage: https://git.xsfx.dev/prometheus/jitsiexporter
+    maintainer: Marvin Preuss <marvin@xsteadfastx.org>

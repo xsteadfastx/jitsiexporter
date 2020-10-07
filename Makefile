@@ -1,22 +1,23 @@
-.PHONY: build clean test lint dep-update
+.PHONY: generate build release clean test lint dep-update
 
-VERSION ?= $(shell git describe --tags --always --dirty --match=v* 2> /dev/null || \
-            echo v0)
+generate:
+	GOFLAGS=-mod=vendor go generate ./...
 
 build:
-	export GOFLAGS=-mod=vendor ; \
-	go generate ./...; \
-	CGO_ENABLED=0 gox -mod vendor -ldflags '-extldflags "-static" -X "main.version=${VERSION}"' github.com/xsteadfastx/jitsiexporter/cmd/jitsiexporter
+	goreleaser build --rm-dist --snapshot
+
+release:
+	goreleaser release --rm-dist --snapshot --skip-publish
 
 clean:
-	rm -f jitsiexporter
+	rm -f dist/
 
 test:
 	export GOFLAGS=-mod=vendor ; \
-	go test ./...
+	go test -v -race -cover ./...
 
 lint:
-	golangci-lint run --enable-all --timeout 5m
+	golangci-lint run --enable-all --disable=godox
 
 dep-update:
 	go get -u ./...

@@ -1,3 +1,4 @@
+// nolint: gochecknoglobals
 package main
 
 import (
@@ -10,7 +11,11 @@ import (
 	"github.com/xsteadfastx/jitsiexporter"
 )
 
-var version string = "development"
+var (
+	version = "dev"
+	commit  = "none"
+	date    = "unknown"
+)
 
 func main() {
 	ver := flag.Bool("version", false, "Prints version.")
@@ -22,7 +27,7 @@ func main() {
 	flag.Parse()
 
 	if *ver {
-		fmt.Print(version)
+		fmt.Printf("jitsiexporter %s, commit %s, built at %s", version, commit, date)
 		os.Exit(0)
 	}
 

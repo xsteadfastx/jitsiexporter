@@ -34,7 +34,6 @@ func (m *Metrics) Update() error {
 	defer m.mux.Unlock()
 
 	now, err := m.Stater.Now(m.URL)
-
 	if err != nil {
 		m.Errors.Inc()
 
@@ -95,6 +94,7 @@ func get(ctx context.Context, url string, resp chan Response) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		resp <- Response{Resp: nil, Error: err}
+
 		return
 	}
 
@@ -158,7 +158,7 @@ func collect(m *Metrics) {
 			log.Error(err)
 		}
 
-		time.Sleep(m.Interval) // nolint:gomnd
+		time.Sleep(m.Interval)
 	}
 }
 

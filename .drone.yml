@@ -4,52 +4,56 @@ name: default
 type: docker
 
 steps:
-
   - name: fetch
     image: alpine/git
     commands:
       - git fetch --tags
 
   - name: lint
-    image: golangci/golangci-lint:v1.24-alpine
+    image: golangci/golangci-lint:v1.31.0-alpine
     commands:
       - apk add --no-cache make
       - make lint
 
   - name: test
-    image: golang:1.14
+    image: golang
+    pull: always
     commands:
       - make test
 
   - name: build
-    image: golang:1.14
+    image: goreleaser/goreleaser
     commands:
-      - (cd /go; go get -v github.com/mitchellh/gox)
-      - (cd /go; go get -v github.com/vektra/mockery/.../)
       - make build
+    depends_on:
+      - test
+      - lint
+    when:
+      event:
+        exclude:
+          - tag
 
-  - name: docker
-    image: plugins/docker
-    settings:
-      repo: quay.io/xsteadfastx/jitsiexporter
-      registry: quay.io
-      auto_tag: true
-      username:
-        from_secret: username
-      password:
-        from_secret: password
-
-  - name: publish to github
-    image: plugins/github-release
-    settings:
-      api_key:
-        from_secret: github_token
-      files:
-        - jitsiexporter_darwin_*
-        - jitsiexporter_freebsd_*
-        - jitsiexporter_linux_*
-        - jitsiexporter_netbsd_*
-        - jitsiexporter_openbsd_*
-        - jitsiexporter_windows_*
+  - name: release
+    image: golang
+    environment:
+      GITEA_TOKEN:
+        from_secret: gitea_token
+    commands:
+      - curl -sL https://git.io/goreleaser | bash
+    depends_on:
+      - test
+      - lint
     when:
       event: tag
+  # - name: docker
+  #   image: plugins/docker
+  #   settings:
+  #     repo: quay.io/xsteadfastx/jitsiexporter
+  #     registry: quay.io
+  #     auto_tag: true
+  #     username:
+  #       from_secret: username
+  #     password:
+  #       from_secret: password
+  #   when:
+  #     event: tag

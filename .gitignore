@@ -1,6 +1,1 @@
-jitsiexporter_darwin_*
-jitsiexporter_freebsd_*
-jitsiexporter_linux_*
-jitsiexporter_netbsd_*
-jitsiexporter_openbsd_*
-jitsiexporter_windows_*
+dist/*

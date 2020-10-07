@@ -1,4 +1,4 @@
-module github.com/xsteadfastx/jitsiexporter
+module git.xsfx.dev/prometheus/jitsiexporter
 
 go 1.14
 
