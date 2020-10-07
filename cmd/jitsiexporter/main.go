@@ -7,8 +7,8 @@ import (
 	"os"
 	"time"
 
+	"git.xsfx.dev/prometheus/jitsiexporter"
 	log "github.com/sirupsen/logrus"
-	"github.com/xsteadfastx/jitsiexporter"
 )
 
 var (
