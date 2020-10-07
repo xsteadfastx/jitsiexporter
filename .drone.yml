@@ -41,8 +41,6 @@ steps:
     environment:
       GITEA_TOKEN:
         from_secret: gitea_token
-      GITHUB_TOKEN:
-        from_secret: github_token
       DOCKER_USERNAME:
         from_secret: username
       DOCKER_PASSWORD:
