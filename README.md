@@ -2,6 +2,8 @@
 
 [![Build Status](https://ci.xsfx.dev/api/badges/prometheus/jitsiexporter/status.svg)](https://ci.xsfx.dev/prometheus/jitsiexporter)
 
+[![Go Report Card](https://goreportcard.com/badge/git.xsfx.dev/prometheus/jitsiexporter)](https://goreportcard.com/report/git.xsfx.dev/prometheus/jitsiexporter)
+
 A Jitsi meet prometheus exporter.
 
         Usage of ./jitsiexporter_linux_amd64:
